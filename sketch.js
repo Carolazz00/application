@@ -1,51 +1,54 @@
-const testo = "WTF";
-const fontSize = 120;
-const parti = 40;
-const sfasamento = 4;
+let shapes = [];
 
-//
+      function setup() {
+        createCanvas(800, 800);
+        colorMode(HSB, 360, 100, 100);
+        noStroke();
 
-/** @type {Font} */
-let font;
+        for (let i = 0; i < 60; i++) {
+          shapes.push({
+            type: random(['circle', 'square', 'triangle']),
+            baseX: random(width),
+            baseY: random(height),
+            size: random(100,400),
+            hue: random(360),
+            speed: random(0.5, 1.5),
+            offset: random(10)
+          });
+        }
+      }
 
-function preload() {
-  font = loadFont("./fonts/Adobe-Jenson-Pro-Bold-Caption.ttf");
-}
+      function draw() {
+        background("BLACK"); 
 
-function setup() {
-  createCanvas(400, 400, "svg");
-  addDownloadButton();
+        for (let i = 0; i < shapes.length; i++) {
+          let s = shapes[i];
+          let t = frameCount * 0.02 * s.speed + s.offset;
 
-  rectMode(CENTER);
-  angleMode(DEGREES);
+          let x = s.baseX + sin(t) * 50;
+          let y = s.baseY + cos(t * 1.5) * 50;
 
-  noLoop(); // Opzionale
-}
+         
+          fill(s.hue, 80, 90);
 
-function draw() {
-  clear(); // Non cancellare!
-
-  textFont(font);
-  textLeading(fontSize);
-  textSize(fontSize);
-
-  const text_width = textWidth(testo);
-  const h_parti = fontSize / parti;
-
-  noStroke();
-  fill(0);
-
-  for (let i = 0; i < parti; i++) {
-    push();
-    translate(text_width / 2, 0);
-    translate(random(-sfasamento, sfasamento), 0);
-
-    beginClip();
-    rect(0, i * h_parti + h_parti / 2, text_width, h_parti);
-    endClip();
-
-    textSVG(testo, -text_width / 2, fontSize);
-
-    pop();
-  }
-}
+          if (s.type === 'circle') {
+            ellipse(x, y, s.size);
+          } else if (s.type === 'square') {
+            rectMode(CENTER);
+            rect(x, y, s.size, s.size);
+          } else if (s.type === 'triangle') {
+            let r = s.size / 2;
+            
+            
+            push();
+            translate(x, y);
+            rotate(t);
+            triangle(
+              0, -r,
+              -r * cos(PI / 6), r * sin(PI / 6),
+              r * cos(PI / 6), r * sin(PI / 6)
+            );
+            pop();
+          }
+        }
+      }
